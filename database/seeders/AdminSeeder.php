@@ -15,13 +15,15 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::create([
-            'id' => (string) Str::uuid(),
-            'name' => 'Admin',
-            'username' => 'admin',
-            'phone' => '08123456789',
-            'email' => 'admin@mail.com',
-            'password' => Hash::make('000000'),
-        ]);
+        Admin::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'id' => (string) Str::uuid(),
+                'name' => 'Admin',
+                'phone' => '08123456789',
+                'email' => 'admin@mail.com',
+                'password' => Hash::make('000000'),
+            ]
+        );
     }
 }
