@@ -70,6 +70,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // create employee
     public function store(Request $request)
     {
 
@@ -113,6 +114,100 @@ class EmployeeController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Employee berhasil dibuat'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
+    // update employee
+    public function update(Request $request, $id)
+    {
+
+        try {
+
+            $employee = Employee::findOrFail($id);
+
+            // validation
+            $request->validate([
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:20',
+                'division' => 'required|exists:divisions,id',
+                'position' => 'required|string|max:255'
+            ]);
+
+            $imagePath = $employee->image;
+
+            // jika upload image baru
+            if ($request->hasFile('image')) {
+
+                // hapus image lama
+                if ($employee->image) {
+                    Storage::disk('public')->delete($employee->image);
+                }
+
+                $file = $request->file('image');
+
+                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+                $imagePath = $file->storeAs(
+                    'employees',
+                    $filename,
+                    'public'
+                );
+
+            }
+
+            $employee->update([
+                'image' => $imagePath,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'division_id' => $request->division,
+                'position' => $request->position
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Employee berhasil diupdate'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
+    // hapus employee
+    public function destroy($id)
+    {
+
+        try {
+
+            $employee = Employee::findOrFail($id);
+
+            // hapus image jika ada
+            if ($employee->image) {
+                Storage::disk('public')->delete($employee->image);
+            }
+
+            $employee->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Employee berhasil dihapus'
             ]);
 
         } catch (\Exception $e) {
