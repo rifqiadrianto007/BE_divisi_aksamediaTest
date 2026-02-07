@@ -3,17 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
-class Division extends Model
+class Employee extends Model
 {
+
+    protected $table = 'employees';
 
     protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
         'id',
-        'name'
+        'image',
+        'name',
+        'phone',
+        'division_id',
+        'position'
     ];
 
     protected static function boot()
@@ -21,15 +26,17 @@ class Division extends Model
         parent::boot();
 
         static::creating(function ($model) {
+
             if (!$model->id) {
                 $model->id = (string) Str::uuid();
             }
+
         });
     }
 
-    public function employees()
+    public function division()
     {
-        return $this->hasMany(Employee::class);
+        return $this->belongsTo(Division::class);
     }
 
 }
