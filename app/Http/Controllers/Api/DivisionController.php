@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Division;
+use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DivisionController extends Controller
 {
@@ -20,19 +21,18 @@ class DivisionController extends Controller
 
         $divisions = $query->paginate(10);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data divisions berhasil diambil',
-            'data' => [
+        return ApiResponse::success(
+            'Data divisions berhasil diambil',
+            [
                 'divisions' => $divisions->items()
             ],
-            'pagination' => [
+            [
                 'current_page' => $divisions->currentPage(),
                 'last_page' => $divisions->lastPage(),
                 'per_page' => $divisions->perPage(),
                 'total' => $divisions->total()
             ]
-        ]);
+        );
 
     }
 
